@@ -56,7 +56,7 @@ export default function ChatroomPage() {
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`p-2 rounded-md max-w-sm ${
+            className={`relative group p-2 rounded-md max-w-sm ${
               msg.sender === "user"
                 ? "bg-blue-100 self-end"
                 : "bg-gray-200 self-start"
@@ -66,6 +66,20 @@ export default function ChatroomPage() {
             <p className="text-xs text-muted-foreground">
               {new Date(msg.timestamp).toLocaleTimeString()}
             </p>
+
+            {/* Copy Button */}
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(msg.text);
+                window.dispatchEvent(
+                  new CustomEvent("toast", { detail: "Message copied!" })
+                );
+              }}
+              className="absolute top-1 right-1 hidden group-hover:flex items-center justify-center w-6 h-6 rounded-full bg-white shadow hover:bg-gray-100 cursor-pointer"
+              title="Copy message"
+            >
+              <span className="text-sm">📋</span>
+            </button>
           </div>
         ))}
 
