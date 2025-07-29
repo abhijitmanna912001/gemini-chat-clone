@@ -6,6 +6,8 @@ import { fetchCountries, type Country } from "./countryService";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router";
+import { useAuthStore } from "@/store/auth";
 
 const phoneSchema = z.object({
   country: z.string().min(1, "Country required"),
@@ -19,6 +21,8 @@ type FormData = z.infer<typeof phoneSchema>;
 export default function PhoneLoginForm() {
   const [countries, setCountries] = useState<Country[]>([]);
   const [isOtpSent, setIsOtpSent] = useState(false);
+  const navigate = useNavigate();
+  const authLogin = useAuthStore((s) => s.login);
 
   const {
     register,
@@ -62,8 +66,14 @@ export default function PhoneLoginForm() {
       toast("Verifying OTP...");
       setTimeout(() => {
         toast.success("Logged in successfully!");
+        authLogin({
+          phone: data.phone,
+          dialCode: data.dialCode,
+          country: data.country,
+        });
         reset();
         setIsOtpSent(false);
+        navigate("/dashboard");
       }, 1000);
     }
   };
