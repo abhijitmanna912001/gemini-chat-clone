@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -12,35 +11,69 @@ type Message = {
   image?: string;
 };
 
-export default function ChatroomPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState("");
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+// Dummy data generator
+const generateDummyMessages = (count: number): Message[] => {
+  return Array.from({ length: count }, (_, i) => ({
+    id: uuidv4(),
+    text: `Dummy message ${i + 1}`,
+    sender: i % 2 === 0 ? "user" : "ai",
+    timestamp: Date.now() - (count - i) * 60000,
+  })).reverse();
+};
 
+export default function ChatroomPage() {
+  const allMessages = useRef<Message[]>(generateDummyMessages(100)); // total data
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [page, setPage] = useState(1);
+  const [newMessage, setNewMessage] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const MESSAGES_PER_PAGE = 20;
+
+  // Load paginated messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const end = page * MESSAGES_PER_PAGE;
+    const start = Math.max(0, end - MESSAGES_PER_PAGE);
+    const pagedMessages = allMessages.current.slice(start, end);
+    setMessages(pagedMessages);
+  }, [page]);
+
+  // Scroll handler for top detection
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      if (
+        container.scrollTop === 0 &&
+        messages.length < allMessages.current.length
+      ) {
+        setTimeout(() => setPage((p) => p + 1), 500); // delay to simulate load
+      }
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
   }, [messages]);
 
   const handleSendMessage = () => {
-    if (!newMessage.trim() && !imagePreview) return;
+    if (!newMessage.trim()) return;
 
     const message: Message = {
       id: uuidv4(),
       text: newMessage,
       sender: "user",
       timestamp: Date.now(),
-      image: imagePreview || undefined,
     };
 
-    setMessages((prev) => [...prev, message]);
+    const updatedAll = [...allMessages.current, message];
+    allMessages.current = updatedAll;
     setNewMessage("");
-    setImagePreview(null);
 
+    setMessages(updatedAll.slice(-page * MESSAGES_PER_PAGE));
     setIsTyping(true);
 
-    // Simulated AI reply
     setTimeout(() => {
       const aiResponse: Message = {
         id: uuidv4(),
@@ -48,14 +81,16 @@ export default function ChatroomPage() {
         sender: "ai",
         timestamp: Date.now(),
       };
-      setMessages((prev) => [...prev, aiResponse]);
+      const newAll = [...allMessages.current, aiResponse];
+      allMessages.current = newAll;
+      setMessages(newAll.slice(-page * MESSAGES_PER_PAGE));
       setIsTyping(false);
     }, 2000);
   };
 
   return (
     <div className="flex flex-col h-screen max-w-3xl mx-auto px-4 py-2">
-      <ScrollArea className="flex-1 overflow-y-auto space-y-4 pr-2">
+      <div className="flex-1 overflow-y-auto space-y-4 pr-2" ref={containerRef}>
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -65,21 +100,18 @@ export default function ChatroomPage() {
                 : "bg-gray-200 self-start"
             }`}
           >
-            {/* Image if present */}
             {msg.image && (
               <img
                 src={msg.image}
-                alt="sent"
-                className="mb-2 max-h-48 rounded-md object-contain"
+                alt="chat-upload"
+                className="rounded mb-1 max-h-48"
               />
             )}
-
             <p className="text-sm">{msg.text}</p>
             <p className="text-xs text-muted-foreground">
               {new Date(msg.timestamp).toLocaleTimeString()}
             </p>
 
-            {/* Copy Button */}
             <button
               onClick={() => {
                 navigator.clipboard.writeText(msg.text);
@@ -100,64 +132,21 @@ export default function ChatroomPage() {
             Gemini is typing...
           </div>
         )}
+      </div>
 
-        <div ref={messagesEndRef} />
-      </ScrollArea>
-
-      {/* Image Preview */}
-      {imagePreview && (
-        <div className="mb-2 relative max-w-xs">
-          <img
-            src={imagePreview}
-            alt="Preview"
-            className="rounded-md max-h-48 object-contain"
-          />
-          <button
-            type="button"
-            onClick={() => setImagePreview(null)}
-            className="absolute top-1 right-1 bg-white px-2 py-0.5 rounded text-sm shadow"
-          >
-            ❌
-          </button>
-        </div>
-      )}
-
-      {/* Message input and image upload */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
           handleSendMessage();
         }}
-        className="flex flex-col gap-2 mt-2"
+        className="flex gap-2 mt-2"
       >
         <Input
           placeholder="Type a message"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
         />
-
-        <div className="flex items-center gap-2">
-          <label className="flex items-center gap-2">
-            <span className="text-sm">Upload image:</span>
-            <input
-              type="file"
-              accept="image/*"
-              title="Choose an image to upload"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    setImagePreview(reader.result as string);
-                  };
-                  reader.readAsDataURL(file);
-                }
-              }}
-              className="text-sm"
-            />
-          </label>
-          <Button type="submit">Send</Button>
-        </div>
+        <Button type="submit">Send</Button>
       </form>
     </div>
   );
