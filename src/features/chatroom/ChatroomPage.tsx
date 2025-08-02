@@ -15,6 +15,7 @@ type Message = {
 export default function ChatroomPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -23,21 +24,23 @@ export default function ChatroomPage() {
   }, [messages]);
 
   const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() && !imagePreview) return;
 
     const message: Message = {
       id: uuidv4(),
       text: newMessage,
       sender: "user",
       timestamp: Date.now(),
+      image: imagePreview || undefined,
     };
 
     setMessages((prev) => [...prev, message]);
     setNewMessage("");
+    setImagePreview(null);
 
     setIsTyping(true);
 
-    // Simulate AI response
+    // Simulated AI reply
     setTimeout(() => {
       const aiResponse: Message = {
         id: uuidv4(),
@@ -62,6 +65,15 @@ export default function ChatroomPage() {
                 : "bg-gray-200 self-start"
             }`}
           >
+            {/* Image if present */}
+            {msg.image && (
+              <img
+                src={msg.image}
+                alt="sent"
+                className="mb-2 max-h-48 rounded-md object-contain"
+              />
+            )}
+
             <p className="text-sm">{msg.text}</p>
             <p className="text-xs text-muted-foreground">
               {new Date(msg.timestamp).toLocaleTimeString()}
@@ -92,19 +104,60 @@ export default function ChatroomPage() {
         <div ref={messagesEndRef} />
       </ScrollArea>
 
+      {/* Image Preview */}
+      {imagePreview && (
+        <div className="mb-2 relative max-w-xs">
+          <img
+            src={imagePreview}
+            alt="Preview"
+            className="rounded-md max-h-48 object-contain"
+          />
+          <button
+            type="button"
+            onClick={() => setImagePreview(null)}
+            className="absolute top-1 right-1 bg-white px-2 py-0.5 rounded text-sm shadow"
+          >
+            ❌
+          </button>
+        </div>
+      )}
+
+      {/* Message input and image upload */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
           handleSendMessage();
         }}
-        className="flex gap-2 mt-2"
+        className="flex flex-col gap-2 mt-2"
       >
         <Input
           placeholder="Type a message"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
         />
-        <Button type="submit">Send</Button>
+
+        <div className="flex items-center gap-2">
+          <label className="flex items-center gap-2">
+            <span className="text-sm">Upload image:</span>
+            <input
+              type="file"
+              accept="image/*"
+              title="Choose an image to upload"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    setImagePreview(reader.result as string);
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+              className="text-sm"
+            />
+          </label>
+          <Button type="submit">Send</Button>
+        </div>
       </form>
     </div>
   );
