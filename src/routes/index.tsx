@@ -1,6 +1,6 @@
 import AuthPage from "@/features/auth/AuthPage";
 import ChatroomPage from "@/features/chatroom/ChatroomPage";
-import DashboardPage from "@/features/dashboard/DashboardPage";
+import ChatroomListPage from "@/features/dashboard/ChatroomListPage";
 import { useAuthStore } from "@/store/auth";
 import { Navigate, Route, Routes } from "react-router";
 
@@ -16,7 +16,7 @@ export default function AppRoutes() {
       <Route path="/auth" element={<AuthPage />} />
       <Route
         path="/dashboard"
-        element={isLoggedIn ? <DashboardPage /> : <Navigate to="/auth" />}
+        element={isLoggedIn ? <ChatroomListPage /> : <Navigate to="/auth" />}
       />
       <Route
         path="/chat/:chatId"
