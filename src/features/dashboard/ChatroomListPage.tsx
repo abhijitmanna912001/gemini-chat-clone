@@ -1,88 +1,50 @@
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
-import { Link } from "react-router";
-import { v4 as uuidv4 } from "uuid";
-
-type Chatroom = {
-  id: string;
-  name: string;
-};
+import { useChatroomStore } from "@/store/chatrooms";
+import { useState } from "react";
+import { useNavigate } from "react-router";
 
 export default function ChatroomListPage() {
-  const [chatrooms, setChatrooms] = useState<Chatroom[]>([]);
-  const [newName, setNewName] = useState("");
+  const { chatrooms, addChatroom } = useChatroomStore();
+  const [title, setTitle] = useState("");
+  const navigate = useNavigate();
 
-  // Load chatrooms from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem("chatrooms");
-    if (stored) {
-      setChatrooms(JSON.parse(stored));
-    }
-  }, []);
-
-  // Save chatrooms to localStorage when changed
-  useEffect(() => {
-    localStorage.setItem("chatrooms", JSON.stringify(chatrooms));
-  }, [chatrooms]);
-
-  const createChatroom = () => {
-    if (!newName.trim()) return;
-
-    const newRoom: Chatroom = {
-      id: uuidv4(),
-      name: newName.trim(),
-    };
-
-    setChatrooms((prev) => [...prev, newRoom]);
-    setNewName("");
-    window.dispatchEvent(
-      new CustomEvent("toast", { detail: "Chatroom created" })
-    );
-  };
-
-  const deleteChatroom = (id: string) => {
-    setChatrooms((prev) => prev.filter((r) => r.id !== id));
-    window.dispatchEvent(
-      new CustomEvent("toast", { detail: "Chatroom deleted" })
-    );
+  const handleCreate = () => {
+    if (!title.trim()) return;
+    const newChat = addChatroom(title.trim());
+    setTitle("");
+    navigate(`/chat/${newChat.id}`);
   };
 
   return (
-    <div className="max-w-xl mx-auto py-8 px-4">
-      <h1 className="text-2xl font-semibold mb-4">Chatrooms</h1>
+    <div className="max-w-xl mx-auto p-4 space-y-4">
+      <h1 className="text-xl font-semibold">Your Chatrooms</h1>
 
-      <div className="flex gap-2 mb-4">
-        <Input
-          placeholder="New chatroom name"
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-        />
-        <Button onClick={createChatroom}>Create</Button>
-      </div>
+      {chatrooms.length === 0 && (
+        <p className="text-gray-500">No chatrooms yet. Create one below!</p>
+      )}
 
-      <div className="space-y-3">
-        {chatrooms.length === 0 && (
-          <p className="text-sm text-muted-foreground">No chatrooms yet.</p>
-        )}
+      <ul className="space-y-2">
         {chatrooms.map((room) => (
-          <Card key={room.id} className="p-3 flex items-center justify-between">
-            <Link
-              to={`/chat/${room.id}`}
-              className="text-blue-600 hover:underline"
-            >
-              {room.name}
-            </Link>
+          <li key={room.id}>
             <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => deleteChatroom(room.id)}
+              className="w-full justify-start"
+              variant="secondary"
+              onClick={() => navigate(`/chat/${room.id}`)}
             >
-              Delete
+              {room.title}
             </Button>
-          </Card>
+          </li>
         ))}
+      </ul>
+
+      <div className="flex gap-2 pt-4">
+        <Input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Enter chatroom title"
+        />
+        <Button onClick={handleCreate}>New Chat</Button>
       </div>
     </div>
   );
