@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 
 export default function ChatroomListPage() {
-  const { chatrooms, addChatroom } = useChatroomStore();
+  const { chatrooms, addChatroom, deleteChatroom } = useChatroomStore();
   const [title, setTitle] = useState("");
   const navigate = useNavigate();
 
@@ -33,6 +33,14 @@ export default function ChatroomListPage() {
               onClick={() => navigate(`/chat/${room.id}`)}
             >
               {room.title}
+            </Button>
+            <Button
+              variant="destructive"
+              size="icon"
+              onClick={() => deleteChatroom(room.id)}
+              title="Delete chatroom"
+            >
+              🗑️
             </Button>
           </li>
         ))}
