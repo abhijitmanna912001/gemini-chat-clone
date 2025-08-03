@@ -67,6 +67,8 @@ export default function PhoneLoginForm() {
       setTimeout(() => {
         toast.success("Logged in successfully!");
         authLogin({
+          id: crypto.randomUUID(),
+          email: `${data.phone}@mock.com`, // temporary email from phone
           phone: data.phone,
           dialCode: data.dialCode,
           country: data.country,
@@ -79,55 +81,59 @@ export default function PhoneLoginForm() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="max-w-md space-y-4 p-4 mx-auto"
-    >
-      <div>
-        <label>Country</label>
-        {selected && (
-          <img
-            src={selected.flag}
-            alt={`${selected.name} flag`}
-            className="h-5 w-7 mt-1"
-          />
-        )}
-        <select {...register("country")} className="w-full p-2 border rounded">
-          <option value="">Select Country</option>
-          {countries.map((c) => (
-            <option key={c.code} value={c.code}>
-              {c.name} ({c.dialCode})
-            </option>
-          ))}
-        </select>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      {/* Country Selection */}
+      <div className="space-y-1">
+        <label htmlFor="country" className="block text-sm font-medium">Country</label>
+        <div className="relative">
+          {selected && (
+            <img
+              src={selected.flag}
+              alt={`${selected.name} flag`}
+              className="h-4 w-6 absolute top-2 left-2 pointer-events-none"
+            />
+          )}
+          <select
+            id="country"
+            {...register("country")}
+            className="w-full pl-10 pr-3 py-2 border rounded-md bg-background text-foreground"
+          >
+            <option value="">Select Country</option>
+            {countries.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.name} ({c.dialCode})
+              </option>
+            ))}
+          </select>
+        </div>
         {errors.country && (
-          <p className="text-red-500 text-sm">{errors.country.message}</p>
+          <p className="text-sm text-destructive">{errors.country.message}</p>
         )}
       </div>
 
-      <div>
-        <label>Phone Number</label>
-        <div className="flex items-center gap-2">
-          <span className="min-w-[60px] border rounded px-2 py-1">
+      {/* Phone Number */}
+      <div className="space-y-1">
+        <label htmlFor="phone" className="block text-sm font-medium">Phone Number</label>
+        <div className="flex gap-2">
+          <span className="min-w-[65px] py-2 px-2 border rounded-md bg-muted text-muted-foreground text-center">
             {watch("dialCode") || "+--"}
           </span>
-          <Input type="tel" placeholder="Enter phone" {...register("phone")} />
+          <Input id="phone" type="tel" placeholder="Enter phone" {...register("phone")} />
         </div>
         {errors.phone && (
-          <p className="text-red-500 text-sm">{errors.phone.message}</p>
+          <p className="text-sm text-destructive">{errors.phone.message}</p>
         )}
       </div>
 
+      {/* OTP Field */}
       {isOtpSent && (
-        <div>
-          <label>OTP</label>
-          <Input
-            placeholder="123456"
-            {...register("otp", { required: true })}
-          />
+        <div className="space-y-1">
+          <label htmlFor="otp" className="block text-sm font-medium">OTP</label>
+          <Input id="otp" placeholder="123456" {...register("otp")} />
         </div>
       )}
 
+      {/* Submit Button */}
       <Button type="submit" className="w-full">
         {isOtpSent ? "Verify OTP" : "Send OTP"}
       </Button>

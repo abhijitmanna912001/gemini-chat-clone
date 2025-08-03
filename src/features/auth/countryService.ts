@@ -5,14 +5,26 @@ export type Country = {
   flag: string;
 };
 
+// Partial typing for the API response (only fields we use)
+type CountryAPIResponse = {
+  name: {
+    common: string;
+  };
+  cca2: string;
+  idd?: {
+    root?: string;
+    suffixes?: string[];
+  };
+};
+
 export async function fetchCountries(): Promise<Country[]> {
   const res = await fetch(
     "https://restcountries.com/v3.1/independent?status=true"
   );
-  const data = await res.json();
+  const data: CountryAPIResponse[] = await res.json();
 
   return data
-    .map((c: any) => {
+    .map((c) => {
       const code = c.cca2;
       const dialRoot = c.idd?.root || "";
       const dialSuffix = c.idd?.suffixes?.[0] || "";
@@ -23,5 +35,5 @@ export async function fetchCountries(): Promise<Country[]> {
         flag: `https://flagcdn.com/${code.toLowerCase()}.svg`,
       };
     })
-    .filter((c: Country) => c.dialCode); // Remove invalid entries
+    .filter((c) => c.dialCode); // Only keep countries with dial code
 }
