@@ -1,69 +1,47 @@
-# React + TypeScript + Vite
+# 🌐 Gemini Chatroom AI — React + ShadCN UI + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Live Demo**: [https://dynamic-dasik-a19d6e.netlify.app](https://dynamic-dasik-a19d6e.netlify.app)
 
-Currently, two official plugins are available:
+A modern Gemini-style chatroom app built with **React + Vite**, featuring:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 📋 Chatroom creation & deletion
+- 💬 AI-simulated chat (Gemini-style)
+- 📸 Image message preview support
+- 🌓 Dark & Light mode toggle
+- 📁 LocalStorage-based persistence
+- 🔒 Simple auth simulation
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Features
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- 🔐 **Authentication simulation** (no backend required)
+- 🧠 **Gemini-style AI response simulation**
+- 🗂️ **Multi-chatroom support** (create/delete chats)
+- 💬 **Message formatting, timestamp, and copy**
+- 🌙 **Dark/Light mode toggle** (ShadCN UI)
+- 🖼️ **Image support in messages**
+- ⚡ Built using **Vite + React + TypeScript**
+- 🎨 UI powered by **ShadCN UI** with TailwindCSS
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🛠️ Tech Stack
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **Frontend**: React + Vite + TypeScript
+- **UI**: ShadCN UI + TailwindCSS
+- **State Management**: Zustand
+- **Validation**: Zod + React Hook Form
+- **Routing**: React Router
+- **Notifications**: Sonner
+- **Deployment**: Netlify
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🧪 Local Setup
+
+```bash
+git clone https://github.com/abhijitmanna912001/gemini-chat-clone
+cd gemini-chat-clone
+npm install
+npm run dev
