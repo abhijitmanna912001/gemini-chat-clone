@@ -1,26 +1,23 @@
 import { create } from "zustand";
 
-type AuthState = {
-  phone: string;
-  dialCode: string;
-  country: string;
+type User = {
+  id: string;
+  email: string;
+  name?: string;
+};
+
+type AuthStore = {
+  user: User | null;
   isLoggedIn: boolean;
-  login: (data: { phone: string; dialCode: string; country: string }) => void;
+  isHydrated: boolean;
+  login: (user: User) => void;
   logout: () => void;
 };
 
-export const useAuthStore = create<AuthState>((set) => ({
-  phone: "",
-  dialCode: "",
-  country: "",
+export const useAuthStore = create<AuthStore>((set) => ({
+  user: null,
   isLoggedIn: false,
-  login: ({ phone, dialCode, country }) => {
-    const authData = { phone, dialCode, country };
-    localStorage.setItem("auth", JSON.stringify(authData));
-    set({ ...authData, isLoggedIn: true });
-  },
-  logout: () => {
-    localStorage.removeItem("auth");
-    set({ phone: "", dialCode: "", country: "", isLoggedIn: false });
-  },
+  isHydrated: false,
+  login: (user) => set({ user, isLoggedIn: true }),
+  logout: () => set({ user: null, isLoggedIn: false }),
 }));

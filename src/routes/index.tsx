@@ -6,6 +6,9 @@ import { Navigate, Route, Routes } from "react-router";
 
 export default function AppRoutes() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
+  const isHydrated = useAuthStore((s) => s.isHydrated);
+
+  if (!isHydrated) return null;
 
   return (
     <Routes>
