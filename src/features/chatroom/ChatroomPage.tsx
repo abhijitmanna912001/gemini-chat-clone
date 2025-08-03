@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { v4 as uuidv4 } from "uuid";
 import { ArrowLeft } from "lucide-react";
+import { ModeToggle } from "@/components/mode-toggle";
 
 type Message = {
   id: string;
@@ -69,6 +70,11 @@ export default function ChatroomPage() {
 
   return (
     <div className="flex flex-col h-screen max-w-3xl mx-auto px-4 py-3 dark:bg-black dark:text-white">
+      {/* 🔘 Mode toggle at top-right */}
+      <div className="absolute top-4 right-4">
+        <ModeToggle />
+      </div>
+
       {/* Back button */}
       <div className="mb-3">
         <button

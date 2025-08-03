@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Toaster } from "sonner";
 import AppRoutes from "./routes";
 import { useAuthStore } from "./store/auth";
+import { ThemeProvider } from "./components/theme-provider";
 
 function App() {
   const login = useAuthStore((s) => s.login);
@@ -16,10 +17,10 @@ function App() {
   }, [login, setHydrated]);
 
   return (
-    <>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <AppRoutes />
       <Toaster />
-    </>
+    </ThemeProvider>
   );
 }
 

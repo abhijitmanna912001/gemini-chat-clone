@@ -1,3 +1,4 @@
+import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useChatroomStore } from "@/store/chatrooms";
@@ -18,7 +19,10 @@ export default function ChatroomListPage() {
 
   return (
     <div className="max-w-xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-semibold text-center">Your Chatrooms</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-semibold">Your Chatrooms</h1>
+        <ModeToggle />
+      </div>
 
       {chatrooms.length === 0 && (
         <p className="text-muted-foreground text-center">
