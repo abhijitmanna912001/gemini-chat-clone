@@ -17,28 +17,34 @@ export default function ChatroomListPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-4 space-y-4">
-      <h1 className="text-xl font-semibold">Your Chatrooms</h1>
+    <div className="max-w-xl mx-auto p-6 space-y-6">
+      <h1 className="text-2xl font-semibold text-center">Your Chatrooms</h1>
 
       {chatrooms.length === 0 && (
-        <p className="text-gray-500">No chatrooms yet. Create one below!</p>
+        <p className="text-muted-foreground text-center">
+          No chatrooms yet. Create one below!
+        </p>
       )}
 
-      <ul className="space-y-2">
+      <ul className="space-y-3">
         {chatrooms.map((room) => (
-          <li key={room.id}>
-            <Button
-              className="w-full justify-start"
-              variant="secondary"
+          <li
+            key={room.id}
+            className="flex items-center justify-between bg-muted rounded-lg px-4 py-3 shadow-sm hover:shadow-md transition"
+          >
+            <button
+              className="text-left text-base font-medium text-primary hover:underline flex-1"
               onClick={() => navigate(`/chat/${room.id}`)}
             >
               {room.title}
-            </Button>
+            </button>
+
             <Button
-              variant="destructive"
+              variant="ghost"
               size="icon"
               onClick={() => deleteChatroom(room.id)}
               title="Delete chatroom"
+              className="text-red-500 hover:bg-red-500 dark:hover:bg-red-900"
             >
               🗑️
             </Button>
@@ -51,8 +57,11 @@ export default function ChatroomListPage() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Enter chatroom title"
+          className="flex-1"
         />
-        <Button onClick={handleCreate}>New Chat</Button>
+        <Button onClick={handleCreate} className="whitespace-nowrap">
+          New Chat
+        </Button>
       </div>
     </div>
   );
